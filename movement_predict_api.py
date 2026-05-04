@@ -1,5 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, UploadFile, File, Form
 from movement_features import MovementAnalyzer
 from pose_feature_extractor import extract_pose_features
 import cv2
@@ -8,15 +7,7 @@ from PIL import Image
 import io
 import joblib
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+router = APIRouter()
 
 try:
     model = joblib.load("risk_model.pkl")
@@ -42,7 +33,7 @@ def sanitize_for_json(value):
         return float(value)
     return value
 
-@app.post("/predict")
+@router.post("/predict")
 async def predict(
     file: UploadFile = File(...),
     instruction: str = Form("")
