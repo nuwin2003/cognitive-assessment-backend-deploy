@@ -69,13 +69,7 @@ async def predict(
     try:
         _load_dependencies()
         
-        if file is None or file.filename == "":
-            return {"error": "No file provided"}
-        
         contents = await file.read()
-        if not contents:
-            return {"error": "File is empty"}
-        
         image = Image.open(io.BytesIO(contents))
         frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
@@ -120,12 +114,6 @@ async def predict(
             }
     except Exception as e:
         import traceback
-        error_msg = str(e)
-        error_trace = traceback.format_exc()
-        print(f"ERROR in /predict endpoint: {error_msg}")
-        print(error_trace)
-        # Return user-friendly error message
-        return {
-            "error": f"Failed to process prediction: {error_msg}",
-            "status": "error"
-        }
+        print(f"ERROR in /predict endpoint: {str(e)}")
+        print(traceback.format_exc())
+        return {"error": str(e)}
