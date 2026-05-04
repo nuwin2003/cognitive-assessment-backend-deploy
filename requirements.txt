@@ -7,7 +7,7 @@ cryptography
 passlib[bcrypt]
 pydantic
 numpy
-opencv-python
+opencv-python-headless
 pillow
 joblib
 mediapipe
