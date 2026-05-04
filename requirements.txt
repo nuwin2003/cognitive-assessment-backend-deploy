@@ -6,6 +6,7 @@ bcrypt==4.0.1
 cryptography
 passlib[bcrypt]
 pydantic
+python-multipart
 numpy
 opencv-python-headless
 pillow
