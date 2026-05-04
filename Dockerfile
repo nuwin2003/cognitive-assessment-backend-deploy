@@ -4,15 +4,20 @@ FROM python:3.11
 # Set working directory in container
 WORKDIR /app
 
-# Install minimal system dependencies
+# Install system dependencies including OpenGL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
+    libglvnd0 \
+    libglvnd-dev \
+    libxrender1 \
+    libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for headless rendering
 ENV DISPLAY=""
 ENV QT_QPA_PLATFORM="offscreen"
 ENV LIBGL_ALWAYS_INDIRECT="1"
+ENV LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 
 # Copy requirements first for better caching
 COPY requirements.txt .
