@@ -13,4 +13,3 @@ venv/
 .env
 .env.local
 pose_dataset.csv
-*.task
