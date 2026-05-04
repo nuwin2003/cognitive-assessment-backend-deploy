@@ -4,15 +4,19 @@ FROM python:3.11-slim
 # Set working directory in container
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies for OpenCV and graphics
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    build-essential \
     libxcb1 \
     libsm6 \
     libxext6 \
     libxrender-dev \
     libglib2.0-0 \
     libgomp1 \
+    libgl1-mesa-glx \
+    libopenblas-dev \
+    liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
