@@ -6,3 +6,8 @@ bcrypt==4.0.1
 cryptography
 passlib[bcrypt]
 pydantic
+numpy
+opencv-python
+pillow
+joblib
+mediapipe
