@@ -52,18 +52,20 @@ def _load_dependencies():
 
 def sanitize_for_json(value):
     """Recursively convert numpy values/containers to JSON-safe native Python types."""
-    if isinstance(value, dict):
-        return {k: sanitize_for_json(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [sanitize_for_json(v) for v in value]
-    if hasattr(value, 'tolist'):  # numpy array
-        return [sanitize_for_json(v) for v in value.tolist()]
+    # Check for scalars FIRST before checking for tolist()
     if isinstance(value, (bool, np.bool_)):
         return bool(value)
     if isinstance(value, (int, np.integer)):
         return int(value)
     if isinstance(value, (float, np.floating)):
         return float(value)
+    # Now check for collections
+    if isinstance(value, dict):
+        return {k: sanitize_for_json(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [sanitize_for_json(v) for v in value]
+    if hasattr(value, 'tolist'):  # numpy array
+        return [sanitize_for_json(v) for v in value.tolist()]
     return value
 
 @router.post("/predict")
