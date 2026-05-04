@@ -1,21 +1,49 @@
 from fastapi import APIRouter, UploadFile, File, Form
-from movement_features import MovementAnalyzer
-from pose_feature_extractor import extract_pose_features
-import cv2
-import numpy as np
-from PIL import Image
 import io
-import joblib
 
 router = APIRouter()
 
-try:
-    model = joblib.load("risk_model.pkl")
-    scaler = joblib.load("scaler.pkl")
-except Exception as e:
-    model = None
-    scaler = None
-    print(f"Warning: Could not load model/scaler file. {e}")
+# Lazy imports - only loaded when needed
+model = None
+scaler = None
+MovementAnalyzer = None
+extract_pose_features = None
+cv2 = None
+np = None
+Image = None
+joblib = None
+
+def _load_dependencies():
+    """Load heavy dependencies on first use"""
+    global model, scaler, MovementAnalyzer, extract_pose_features, cv2, np, Image, joblib
+    
+    if cv2 is not None:
+        return  # Already loaded
+    
+    try:
+        import cv2 as cv2_import
+        import numpy as np_import
+        from PIL import Image as PILImage
+        import joblib as joblib_import
+        from movement_features import MovementAnalyzer as MA
+        from pose_feature_extractor import extract_pose_features as epf
+        
+        cv2 = cv2_import
+        np = np_import
+        Image = PILImage
+        joblib = joblib_import
+        MovementAnalyzer = MA
+        extract_pose_features = epf
+        
+        # Load model and scaler
+        try:
+            model = joblib.load("risk_model.pkl")
+            scaler = joblib.load("scaler.pkl")
+        except Exception as e:
+            print(f"Warning: Could not load model/scaler file. {e}")
+    except ImportError as e:
+        print(f"Error loading movement prediction dependencies: {e}")
+        raise
 
 def sanitize_for_json(value):
     """Recursively convert numpy values/containers to JSON-safe native Python types."""
@@ -23,13 +51,13 @@ def sanitize_for_json(value):
         return {k: sanitize_for_json(v) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
         return [sanitize_for_json(v) for v in value]
-    if isinstance(value, np.ndarray):
+    if hasattr(value, 'tolist'):  # numpy array
         return [sanitize_for_json(v) for v in value.tolist()]
-    if isinstance(value, np.bool_):
+    if isinstance(value, (bool, np.bool_)):
         return bool(value)
-    if isinstance(value, np.integer):
+    if isinstance(value, (int, np.integer)):
         return int(value)
-    if isinstance(value, np.floating):
+    if isinstance(value, (float, np.floating)):
         return float(value)
     return value
 
@@ -38,6 +66,8 @@ async def predict(
     file: UploadFile = File(...),
     instruction: str = Form("")
 ):
+    _load_dependencies()
+    
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
     frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
