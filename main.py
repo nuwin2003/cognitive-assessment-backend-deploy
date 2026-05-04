@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import auth_router, assessment_history_router
+from movement_predict_api import router as predict_router
 from database import connect_db, disconnect_db
 
 app = FastAPI()
@@ -26,3 +27,4 @@ def shutdown_db():
 
 app.include_router(auth_router.router, prefix="/auth")
 app.include_router(assessment_history_router.router, prefix="/assessment-history")
+app.include_router(predict_router)

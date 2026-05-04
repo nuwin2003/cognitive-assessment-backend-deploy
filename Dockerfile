@@ -18,14 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Copy and make entrypoint script executable
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# Expose port (Render uses PORT environment variable)
+EXPOSE 8000
 
-# Expose ports for both services
-# Port 8000: Main FastAPI backend
-# Port 8001: Movement prediction API
-EXPOSE 8000 8001
-
-# Run the entrypoint script
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
