@@ -4,9 +4,11 @@ FROM python:3.11-slim
 # Set working directory in container
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies for mediapipe
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    libxcb-shm0 \
+    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching

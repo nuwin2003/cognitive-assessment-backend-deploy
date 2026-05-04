@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import auth_router, assessment_history_router
-from movement_predict_api import router as predict_router
 from database import connect_db, disconnect_db
 
 app = FastAPI()
@@ -27,4 +26,12 @@ def shutdown_db():
 
 app.include_router(auth_router.router, prefix="/auth")
 app.include_router(assessment_history_router.router, prefix="/assessment-history")
-app.include_router(predict_router)
+
+# Try to include the movement prediction router - it's optional
+try:
+    from movement_predict_api import router as predict_router
+    app.include_router(predict_router)
+    print("Movement prediction API loaded successfully")
+except ImportError as e:
+    print(f"Warning: Movement prediction API could not be loaded: {e}")
+    print("Main backend will continue to run without /predict endpoint")
