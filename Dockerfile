@@ -1,17 +1,11 @@
-# Use official Python runtime as base image
-FROM python:3.11-slim
+# Use official Python runtime as base image (non-slim for better library support)
+FROM python:3.11
 
 # Set working directory in container
 WORKDIR /app
 
 # Install system dependencies for mediapipe and opencv
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libxcb1 \
-    libxcb-shm0 \
-    libxrender1 \
-    libsm6 \
-    libxext6 \
     libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
