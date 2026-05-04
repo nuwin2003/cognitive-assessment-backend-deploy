@@ -4,6 +4,7 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from collections import deque
+import os
 
 pose = None
 pose_history = deque(maxlen=30)  # Keep last 30 frames for motion analysis
@@ -11,7 +12,12 @@ pose_history = deque(maxlen=30)  # Keep last 30 frames for motion analysis
 def _init_pose():
     global pose
     if pose is None:
-        base_options = python.BaseOptions(model_asset_path='pose_landmarker_lite.task')
+        # Get the absolute path to the model file
+        model_path = os.path.join(os.path.dirname(__file__), 'pose_landmarker_lite.task')
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model file not found at: {model_path}")
+        
+        base_options = python.BaseOptions(model_asset_path=model_path)
         options = vision.PoseLandmarkerOptions(
             base_options=base_options,
             running_mode=vision.RunningMode.IMAGE
