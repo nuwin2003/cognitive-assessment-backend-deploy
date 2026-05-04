@@ -3,6 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import auth_router, assessment_history_router
 from movement_predict_api import router as predict_router
 from database import connect_db, disconnect_db
+import os
+
+# Set environment variables for headless rendering
+os.environ['DISPLAY'] = ''
+os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
 
 app = FastAPI()
 

@@ -1,5 +1,10 @@
 from fastapi import APIRouter, UploadFile, File, Form
 import io
+import os
+
+# Set environment variables for headless OpenGL
+os.environ['DISPLAY'] = ''
+os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 
 router = APIRouter()
 

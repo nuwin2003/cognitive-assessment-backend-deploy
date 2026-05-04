@@ -4,11 +4,15 @@ FROM python:3.11
 # Set working directory in container
 WORKDIR /app
 
-# Install system dependencies for mediapipe and opencv
+# Install minimal system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for headless rendering
+ENV DISPLAY=""
+ENV QT_QPA_PLATFORM="offscreen"
+ENV LIBGL_ALWAYS_INDIRECT="1"
 
 # Copy requirements first for better caching
 COPY requirements.txt .
